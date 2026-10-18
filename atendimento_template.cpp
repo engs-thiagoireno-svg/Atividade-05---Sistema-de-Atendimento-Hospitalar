@@ -13,7 +13,7 @@ struct No {
 
     // R1 · Fila de pacientes (FIFO): Entra por trás, sai pela frente
 struct FilaPacientes {
-    No* frente = nullptr;
+    No* frente = nullptr; 
     No* tras   = nullptr;
 
     // Insere o paciente no final da fila
@@ -151,7 +151,7 @@ struct ListaMedicos {
 // R4 · Relatório: imprime do topo à base sem destruir o histórico
 
 void imprimirHistorico(PilhaHistorico& hist) {
-    cout << "\n=== Relatório de Atendimentos ===\n";
+    cout << "\nRelatório de atendimentos:\n";
     if (hist.isEmpty()) {
         cout << "(nenhum atendimento registrado)\n";
         return;
@@ -175,17 +175,15 @@ void imprimirHistorico(PilhaHistorico& hist) {
 // Coloca o paciente na fila e mostra a chegada na tela
 void chegar(FilaPacientes& fila, const string& nome, int urgencia) {
     fila.enqueue(nome, urgencia);
-    cout << "  + " << nome << "\n";
+    cout << "  " << fila.tamanho() << ". " << nome << "\n";
 }
 
 // Programa principal: integra as estruturas
 int main() {
-    cout << "╔═══════════════════════════════════════════════════╗\n";
-    cout << "║" << string(51, ' ') << "║\n";
-    cout << "║" << string(14, ' ') << "SISTEMA DE ATENDIMENTO" << string(15, ' ') << "║\n";
-    cout << "║" << string(16, ' ') << "Hospital Campo Real" << string(16, ' ') << "║\n";
-    cout << "║" << string(51, ' ') << "║\n";
-    cout << "╚═══════════════════════════════════════════════════╝\n\n";
+    cout << "╔══════════════════════════════════════╗\n";
+    cout << "║" << string(8, ' ') << "SISTEMA DE ATENDIMENTO" << string(8, ' ') << "║\n";
+    cout << "║" << string(9, ' ') << "Hospital Campo Real" << string(10, ' ') << "║\n";
+    cout << "╚══════════════════════════════════════╝\n\n";
 
     FilaPacientes  fila;
     PilhaHistorico historico;
@@ -199,12 +197,12 @@ int main() {
 
     // Pacientes chegam na fila (R1)
     cout << "\nPacientes chegando:\n";
-    chegar(fila, "Eduardo (urgencia = 3)", 3);
-    chegar(fila, "Fernanda (urgencia = 1)", 1);
-    chegar(fila, "Gabriel (urgencia = 2)", 2);
-    chegar(fila, "Helena (urgencia = 1)", 1);
+    chegar(fila, "Eduardo com urgencia nivel 3", 3);
+    chegar(fila, "Fernanda com urgencia nivel 1", 1);
+    chegar(fila, "Gabriel com urgencia nivel 2", 2);
+    chegar(fila, "Helena com urgencia nivel 1", 1);
 
-    cout << "Próximo a ser atendido: " << fila.frente_peek() << "\n";
+    cout << "\nPróximo a ser atendido: " << fila.frente_peek() << "\n";
     cout << "Total na fila: " << fila.tamanho() << "\n";
 
     // Atendimentos: cada médico atende e volta ao final da lista
@@ -214,7 +212,7 @@ int main() {
         string paciente = fila.dequeue();
         string medico   = medicos.chamarMedico();
 
-        cout << "  [" << atend++ << "] " << medico
+        cout << "  " << atend++ << ". " << medico
              << " atende " << paciente << "\n";
 
         historico.push(medico + " → " + paciente);  // R2
@@ -222,7 +220,7 @@ int main() {
     }
 
     // Último atendimento 
-    cout << "\nÚltimo atendimento registrado (peek): " << historico.peek() << "\n";
+    cout << "\nÚltimo atendimento registrado: " << historico.peek() << "\n";
 
     // Relatório final (R4)
     imprimirHistorico(historico);
