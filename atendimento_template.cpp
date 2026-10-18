@@ -1,30 +1,16 @@
-// ╔══════════════════════════════════════════════════════════════════════════╗
-// ║  DESAFIO SQUAD — Sistema de Atendimento                                 ║
-// ║  PSC II · Engenharia de Software · Campo Real · Prof. Giovane Galvão    ║
-// ╠══════════════════════════════════════════════════════════════════════════╣
-// ║  Compilar:  g++ -std=c++17 -Wall -o atendimento atendimento_template.cpp ║
-// ║  Rodar:     ./atendimento                                                ║
-// ╠══════════════════════════════════════════════════════════════════════════╣
-// ║  REGRAS:                                                                 ║
-// ║   • Não usar STL (vector, queue, stack, list etc.)                       ║
-// ║   • Toda alocação dinâmica (new) deve ter seu delete correspondente      ║
-// ║   • Commitar a cada requisito implementado (R1, R2, R3, R4)             ║
-// ║   • README.md no repositório explicando como compilar e usar             ║
-// ╠══════════════════════════════════════════════════════════════════════════╣
-// ║  RANKING:                                                                ║
-// ║   +1 por requisito que compila e funciona                                ║
-// ║   +1 por commit organizado com mensagem descritiva                       ║
-// ║   +2 por README.md completo                                              ║
-// ║   +2 squad com melhor demo (2 min)                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════╝
+// Sistema de Atendimento Hospitalar
+// PSC II · Engenharia de Software · Campo Real · Prof. Giovane Galvão
+//
+// Compilar: g++ -std=c++17 -Wall -o atendimento atendimento_template.cpp
+// Rodar:    ./atendimento   (no Windows: .\atendimento.exe)
+//
+// Estruturas construídas à mão, sem STL: Fila, Pilha e Lista Encadeada.
 
 #include <iostream>
 #include <string>
 using namespace std;
 
-// ════════════════════════════════════════════════════════════════
-// ESTRUTURA BASE — Nó genérico (NÃO MODIFIQUE)
-// ════════════════════════════════════════════════════════════════
+// Nó genérico usado pelas três estruturas
 struct No {
     string nome;
     int    urgencia;   // 1=baixa, 2=media, 3=alta (usado apenas por Paciente)
@@ -33,17 +19,13 @@ struct No {
 };
 
 // ════════════════════════════════════════════════════════════════
-// R1 · FILA DE PACIENTES (estrutura FIFO com dois ponteiros)
+// R1 · Fila de pacientes (FIFO): entra por trás, sai pela frente
 // ════════════════════════════════════════════════════════════════
-// Pacientes entram pelo "trás" e saem pela "frente"
-// Dentro da mesma urgência, quem chegou primeiro é atendido primeiro
-
 struct FilaPacientes {
     No* frente = nullptr;
     No* tras   = nullptr;
 
-    // TODO 1: Implemente enqueue(nome, urgencia)
-    //         Paciente entra no final da fila
+    // Insere o paciente no final da fila
     void enqueue(const string& nome, int urgencia) {
         No* novo = new No(nome, urgencia);
         if (isEmpty()) {
@@ -54,20 +36,19 @@ struct FilaPacientes {
         }
     }
 
-    // TODO 2: Implemente dequeue()
-    //         Remove e retorna o nome do paciente na frente da fila
+    // Remove o paciente da frente e devolve o nome
     string dequeue() {
         if (isEmpty()) return "";
 
         No* temp = frente;
         string nome = temp->nome;
         frente = frente->prox;
-        if (frente == nullptr) tras = nullptr;
+        if (frente == nullptr) tras = nullptr;  // fila ficou vazia
         delete temp;
         return nome;
     }
 
-    // TODO 3: Implemente frente_peek() — ver quem está na frente sem remover
+    // Mostra quem está na frente sem remover
     string frente_peek() const {
         if (isEmpty()) return "";
         return frente->nome;
@@ -75,14 +56,10 @@ struct FilaPacientes {
 
     bool isEmpty() const { return frente == nullptr; }
 
-    // BÔNUS: Implemente tamanho() que conta os nós na fila
+    // Conta os nós da fila
     int tamanho() const {
         int cont = 0;
-        No* p = frente;
-        while (p != nullptr) {
-            cont++;
-            p = p->prox;
-        }
+        for (No* p = frente; p != nullptr; p = p->prox) cont++;
         return cont;
     }
 
@@ -92,33 +69,34 @@ struct FilaPacientes {
 };
 
 // ════════════════════════════════════════════════════════════════
-// R2 · HISTÓRICO COM PILHA (estrutura LIFO)
+// R2 · Histórico de atendimentos (pilha LIFO)
 // ════════════════════════════════════════════════════════════════
-// Cada atendimento concluído vai para a pilha de histórico
-// O médico pode consultar o último atendimento com peek()
-
 struct PilhaHistorico {
     No* topo = nullptr;
 
-   void push(const string& nome) {
-    No* novo = new No(nome);
-    novo->prox = topo;
-    topo = novo;
-}
+    // Empilha um atendimento concluído
+    void push(const string& nome) {
+        No* novo = new No(nome);
+        novo->prox = topo;
+        topo = novo;
+    }
 
-string pop() {
-    if (isEmpty()) return "";
-    No* temp = topo;
-    string nome = temp->nome;
-    topo = topo->prox;
-    delete temp;
-    return nome;
-}
+    // Desempilha e devolve o último atendimento
+    string pop() {
+        if (isEmpty()) return "";
 
-string peek() const {
-    if (isEmpty()) return "";
-    return topo->nome;
-}
+        No* temp = topo;
+        string nome = temp->nome;
+        topo = topo->prox;
+        delete temp;
+        return nome;
+    }
+
+    // Mostra o último atendimento sem remover
+    string peek() const {
+        if (isEmpty()) return "";
+        return topo->nome;
+    }
 
     bool isEmpty() const { return topo == nullptr; }
 
@@ -128,73 +106,71 @@ string peek() const {
 };
 
 // ════════════════════════════════════════════════════════════════
-// R3 · LISTA DE MÉDICOS DISPONÍVEIS (lista encadeada)
+// R3 · Lista de médicos disponíveis (lista encadeada)
+// O médico sai da lista ao ser chamado e volta ao final depois de atender
 // ════════════════════════════════════════════════════════════════
-// Lista de médicos plantão. Quando chamado, médico sai da lista.
-// Quando termina o atendimento, volta para o final da lista.
-
 struct ListaMedicos {
     No* head = nullptr;
 
-   void adicionarMedico(const string& nome) {
-    No* novo = new No(nome);
-    if (head == nullptr) {
-        head = novo;
-        return;
+    // Adiciona um médico no final da lista
+    void adicionarMedico(const string& nome) {
+        No* novo = new No(nome);
+        if (head == nullptr) {
+            head = novo;
+            return;
+        }
+        No* p = head;
+        while (p->prox != nullptr) p = p->prox;
+        p->prox = novo;
     }
-    No* p = head;
-    while (p->prox != nullptr) p = p->prox;
-    p->prox = novo;
-}
 
-string chamarMedico() {
-    if (head == nullptr) return "";
-    No* temp = head;
-    string nome = temp->nome;
-    head = head->prox;
-    delete temp;
-    return nome;
-}
+    // Remove o primeiro médico da lista e devolve o nome
+    string chamarMedico() {
+        if (head == nullptr) return "";
 
-void percorrer(const string& prefixo = "") const {
-    if (!prefixo.empty()) cout << prefixo << ": ";
-    if (head == nullptr) {
-        cout << "(lista vazia)\n";
-        return;
+        No* temp = head;
+        string nome = temp->nome;
+        head = head->prox;
+        delete temp;
+        return nome;
     }
-    No* p = head;
-    while (p != nullptr) {
-        cout << p->nome;
-        if (p->prox != nullptr) cout << " → ";
-        p = p->prox;
+
+    // Imprime todos os médicos disponíveis, separados por setas
+    void percorrer(const string& prefixo = "") const {
+        if (!prefixo.empty()) cout << prefixo << ": ";
+        if (head == nullptr) {
+            cout << "(lista vazia)\n";
+            return;
+        }
+        for (No* p = head; p != nullptr; p = p->prox) {
+            cout << p->nome;
+            if (p->prox != nullptr) cout << " → ";
+        }
+        cout << "\n";
     }
-    cout << "\n";
-}
+
     bool temMedico() const { return head != nullptr; }
 
     ~ListaMedicos() {
         while (head) {
             No* t = head;
-            head  = head->prox;
+            head = head->prox;
             delete t;
         }
     }
 };
 
 // ════════════════════════════════════════════════════════════════
-// R4 · RELATÓRIO E HISTÓRICO COMPLETO
+// R4 · Relatório: imprime do topo à base sem destruir o histórico
 // ════════════════════════════════════════════════════════════════
-
-// TODO 10: Implemente a função imprimirHistorico(PilhaHistorico&)
-//          Imprime todos os atendimentos do histórico na ordem (do topo à base)
-//          ATENÇÃO: não destrua o histórico ao imprimir!
-//          Dica: use uma pilha auxiliar para preservar os dados
 void imprimirHistorico(PilhaHistorico& hist) {
     cout << "\n=== Relatório de Atendimentos ===\n";
     if (hist.isEmpty()) {
         cout << "(nenhum atendimento registrado)\n";
         return;
     }
+
+    // Pilha auxiliar guarda os itens para devolvê-los depois
     PilhaHistorico aux;
     int n = 1;
 
@@ -209,10 +185,15 @@ void imprimirHistorico(PilhaHistorico& hist) {
     }
 }
 
-// ════════════════════════════════════════════════════════════════
-// PROGRAMA PRINCIPAL — integra as 4 estruturas
-// ════════════════════════════════════════════════════════════════
+// Coloca o paciente na fila e mostra a chegada na tela
+void chegar(FilaPacientes& fila, const string& nome, int urgencia) {
+    fila.enqueue(nome, urgencia);
+    cout << "  + " << nome << "\n";
+}
 
+// ════════════════════════════════════════════════════════════════
+// Programa principal: integra as estruturas
+// ════════════════════════════════════════════════════════════════
 int main() {
     cout << "╔═══════════════════════════════════════════════════╗\n";
     cout << "║" << string(51, ' ') << "║\n";
@@ -221,28 +202,27 @@ int main() {
     cout << "║" << string(51, ' ') << "║\n";
     cout << "╚═══════════════════════════════════════════════════╝\n\n";
 
-    // Crie as estruturas
     FilaPacientes  fila;
     PilhaHistorico historico;
     ListaMedicos   medicos;
 
-    // ── Cadastrar médicos (R3) ────────────────────────────────
+    // Médicos de plantão (R3)
     medicos.adicionarMedico("Dra. Ana Lima");
     medicos.adicionarMedico("Dr. Bruno Costa");
     medicos.adicionarMedico("Dra. Carla Ramos");
     medicos.percorrer("Médicos disponíveis");
 
-    // ── Pacientes chegam na fila (R1) ─────────────────────────
+    // Pacientes chegam na fila (R1)
     cout << "\nPacientes chegando:\n";
-    fila.enqueue("Eduardo (urgencia = 3)", 3);
-    fila.enqueue("Fernanda (urgencia = 1)", 1);
-    fila.enqueue("Gabriel (urgencia = 2)", 2);
-    fila.enqueue("Helena (urgencia = 1)", 1);
+    chegar(fila, "Eduardo (urgencia = 3)", 3);
+    chegar(fila, "Fernanda (urgencia = 1)", 1);
+    chegar(fila, "Gabriel (urgencia = 2)", 2);
+    chegar(fila, "Helena (urgencia = 1)", 1);
 
     cout << "Próximo a ser atendido: " << fila.frente_peek() << "\n";
     cout << "Total na fila: " << fila.tamanho() << "\n";
 
-    // ── Simulação de atendimentos ─────────────────────────────
+    // Atendimentos: cada médico atende e volta ao final da lista
     cout << "\nSimulação de atendimentos:\n";
     int atend = 1;
     while (!fila.isEmpty() && medicos.temMedico()) {
@@ -252,37 +232,15 @@ int main() {
         cout << "  [" << atend++ << "] " << medico
              << " atende " << paciente << "\n";
 
-        // Registra no histórico (R2)
-        historico.push(medico + " → " + paciente);
-
-        // Médico volta para a fila depois de atender
-        // (descomente após implementar adicionarMedico)
-         medicos.adicionarMedico(medico);
+        historico.push(medico + " → " + paciente);  // R2
+        medicos.adicionarMedico(medico);            // médico volta à lista
     }
 
-    // ── Último atendimento (peek na pilha) ────────────────────
+    // Último atendimento (peek na pilha)
     cout << "\nÚltimo atendimento registrado (peek): " << historico.peek() << "\n";
 
-    // ── Relatório final (R4) ──────────────────────────────────
+    // Relatório final (R4)
     imprimirHistorico(historico);
 
     return 0;
 }
-
-// ════════════════════════════════════════════════════════════════
-// CHECKLIST DE ENTREGA
-// ════════════════════════════════════════════════════════════════
-// [ ] TODO 1 — enqueue funciona (paciente entra na fila)
-// [ ] TODO 2 — dequeue funciona (paciente sai da fila, memória liberada)
-// [ ] TODO 3 — frente_peek retorna o nome sem remover
-// [ ] TODO 4 — push empilha no histórico
-// [ ] TODO 5 — pop desempilha e libera memória
-// [ ] TODO 6 — peek retorna o topo sem remover
-// [ ] TODO 7 — adicionarMedico insere no final da lista
-// [ ] TODO 8 — chamarMedico remove do início e retorna o nome
-// [ ] TODO 9 — percorrer imprime todos os médicos com setas
-// [ ] TODO 10 — imprimirHistorico imprime sem destruir os dados
-// [ ] Programa compila sem warnings: g++ -std=c++17 -Wall -o sis main.cpp
-// [ ] Sem vazamentos de memória (todo new tem delete correspondente)
-// [ ] Repositório no GitHub com histórico de commits organizado
-// [ ] README.md com instrução de compilação e exemplo de saída
