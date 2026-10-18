@@ -1,26 +1,17 @@
-// Sistema de Atendimento Hospitalar
-// PSC II · Engenharia de Software · Campo Real · Prof. Giovane Galvão
-//
-// Compilar: g++ -std=c++17 -Wall -o atendimento atendimento_template.cpp
-// Rodar:    ./atendimento   (no Windows: .\atendimento.exe)
-//
-// Estruturas construídas à mão, sem STL: Fila, Pilha e Lista Encadeada.
-
 #include <iostream>
 #include <string>
 using namespace std;
 
-// Nó genérico usado pelas três estruturas
+// Três estruturas
 struct No {
     string nome;
-    int    urgencia;   // 1=baixa, 2=media, 3=alta (usado apenas por Paciente)
+    int    urgencia;   // 1 = baixa, 2 = media, 3 = alta 
     No*    prox;
     No(const string& n, int u = 0) : nome(n), urgencia(u), prox(nullptr) {}
 };
 
-// ════════════════════════════════════════════════════════════════
-// R1 · Fila de pacientes (FIFO): entra por trás, sai pela frente
-// ════════════════════════════════════════════════════════════════
+
+    // R1 · Fila de pacientes (FIFO): Entra por trás, sai pela frente
 struct FilaPacientes {
     No* frente = nullptr;
     No* tras   = nullptr;
@@ -68,9 +59,8 @@ struct FilaPacientes {
     }
 };
 
-// ════════════════════════════════════════════════════════════════
-// R2 · Histórico de atendimentos (pilha LIFO)
-// ════════════════════════════════════════════════════════════════
+
+// R2 · Histórico de atendimentos 
 struct PilhaHistorico {
     No* topo = nullptr;
 
@@ -105,10 +95,8 @@ struct PilhaHistorico {
     }
 };
 
-// ════════════════════════════════════════════════════════════════
-// R3 · Lista de médicos disponíveis (lista encadeada)
+    // R3 · Lista de médicos disponíveis 
 // O médico sai da lista ao ser chamado e volta ao final depois de atender
-// ════════════════════════════════════════════════════════════════
 struct ListaMedicos {
     No* head = nullptr;
 
@@ -135,7 +123,7 @@ struct ListaMedicos {
         return nome;
     }
 
-    // Imprime todos os médicos disponíveis, separados por setas
+    // Imprime todos os médicos disponíveis
     void percorrer(const string& prefixo = "") const {
         if (!prefixo.empty()) cout << prefixo << ": ";
         if (head == nullptr) {
@@ -160,9 +148,8 @@ struct ListaMedicos {
     }
 };
 
-// ════════════════════════════════════════════════════════════════
 // R4 · Relatório: imprime do topo à base sem destruir o histórico
-// ════════════════════════════════════════════════════════════════
+
 void imprimirHistorico(PilhaHistorico& hist) {
     cout << "\n=== Relatório de Atendimentos ===\n";
     if (hist.isEmpty()) {
@@ -170,7 +157,7 @@ void imprimirHistorico(PilhaHistorico& hist) {
         return;
     }
 
-    // Pilha auxiliar guarda os itens para devolvê-los depois
+    // Pilha auxiliar guarda os itens para devolve depois
     PilhaHistorico aux;
     int n = 1;
 
@@ -191,9 +178,7 @@ void chegar(FilaPacientes& fila, const string& nome, int urgencia) {
     cout << "  + " << nome << "\n";
 }
 
-// ════════════════════════════════════════════════════════════════
 // Programa principal: integra as estruturas
-// ════════════════════════════════════════════════════════════════
 int main() {
     cout << "╔═══════════════════════════════════════════════════╗\n";
     cout << "║" << string(51, ' ') << "║\n";
@@ -236,7 +221,7 @@ int main() {
         medicos.adicionarMedico(medico);            // médico volta à lista
     }
 
-    // Último atendimento (peek na pilha)
+    // Último atendimento 
     cout << "\nÚltimo atendimento registrado (peek): " << historico.peek() << "\n";
 
     // Relatório final (R4)
