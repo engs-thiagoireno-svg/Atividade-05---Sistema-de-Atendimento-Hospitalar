@@ -136,28 +136,40 @@ string peek() const {
 struct ListaMedicos {
     No* head = nullptr;
 
-    // TODO 7: Implemente adicionarMedico(nome)
-    //         Adiciona um médico no final da lista
-    void adicionarMedico(const string& nome) {
-        // Dica: percorra até o último nó e insira no final
-        // ...
+   void adicionarMedico(const string& nome) {
+    No* novo = new No(nome);
+    if (head == nullptr) {
+        head = novo;
+        return;
     }
+    No* p = head;
+    while (p->prox != nullptr) p = p->prox;
+    p->prox = novo;
+}
 
-    // TODO 8: Implemente chamarMedico()
-    //         Remove e retorna o primeiro médico disponível
-    string chamarMedico() {
-        // Dica: remova do início (como removerInicio da lista)
-        return "";  // substitua pelo retorno correto
-    }
+string chamarMedico() {
+    if (head == nullptr) return "";
+    No* temp = head;
+    string nome = temp->nome;
+    head = head->prox;
+    delete temp;
+    return nome;
+}
 
-    // TODO 9: Implemente percorrer()
-    //         Imprime todos os médicos disponíveis
-    void percorrer(const string& prefixo = "") const {
-        if (!prefixo.empty()) cout << prefixo << ": ";
-        // Dica: percorra com No* p = head; while(p) { ... p = p->prox; }
+void percorrer(const string& prefixo = "") const {
+    if (!prefixo.empty()) cout << prefixo << ": ";
+    if (head == nullptr) {
         cout << "(lista vazia)\n";
+        return;
     }
-
+    No* p = head;
+    while (p != nullptr) {
+        cout << p->nome;
+        if (p->prox != nullptr) cout << " → ";
+        p = p->prox;
+    }
+    cout << "\n";
+}
     bool temMedico() const { return head != nullptr; }
 
     ~ListaMedicos() {
@@ -234,7 +246,7 @@ int main() {
 
         // Médico volta para a fila depois de atender
         // (descomente após implementar adicionarMedico)
-        // medicos.adicionarMedico(medico);
+         medicos.adicionarMedico(medico);
     }
 
     // ── Último atendimento (peek na pilha) ────────────────────
