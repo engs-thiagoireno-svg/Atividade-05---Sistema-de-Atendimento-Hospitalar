@@ -2,18 +2,18 @@
 #include <string>
 using namespace std;
 
-// Três estruturas
+// Nó usado pelas três estruturas
 struct No {
     string nome;
-    int    urgencia;   // 1 = baixa, 2 = media, 3 = alta 
+    int    urgencia;   // 1 = baixa, 2 = media, 3 = alta
     No*    prox;
     No(const string& n, int u = 0) : nome(n), urgencia(u), prox(nullptr) {}
 };
 
 
-    // R1 · Fila de pacientes (FIFO): Entra por trás, sai pela frente
+// R1 · Fila de pacientes (FIFO): Entra por trás, sai pela frente
 struct FilaPacientes {
-    No* frente = nullptr; 
+    No* frente = nullptr;
     No* tras   = nullptr;
 
     // Insere o paciente no final da fila
@@ -60,7 +60,7 @@ struct FilaPacientes {
 };
 
 
-// R2 · Histórico de atendimentos 
+// R2 · Histórico de atendimentos
 struct PilhaHistorico {
     No* topo = nullptr;
 
@@ -95,7 +95,7 @@ struct PilhaHistorico {
     }
 };
 
-    // R3 · Lista de médicos disponíveis 
+// R3 · Lista de médicos disponíveis
 // O médico sai da lista ao ser chamado e volta ao final depois de atender
 struct ListaMedicos {
     No* head = nullptr;
@@ -157,7 +157,7 @@ void imprimirHistorico(PilhaHistorico& hist) {
         return;
     }
 
-    // Pilha auxiliar guarda os itens para devolve depois
+    // Pilha auxiliar guarda os itens para devolver depois
     PilhaHistorico aux;
     int n = 1;
 
@@ -219,7 +219,7 @@ int main() {
         medicos.adicionarMedico(medico);            // médico volta à lista
     }
 
-    // Último atendimento 
+    // Último atendimento
     cout << "\nÚltimo atendimento registrado: " << historico.peek() << "\n";
 
     // Relatório final (R4)
