@@ -100,23 +100,25 @@ struct FilaPacientes {
 struct PilhaHistorico {
     No* topo = nullptr;
 
-    // TODO 4: Implemente push(nome)
-    //         Empilha um atendimento concluído
-    void push(const string& nome) {
-        // ...
-    }
+   void push(const string& nome) {
+    No* novo = new No(nome);
+    novo->prox = topo;
+    topo = novo;
+}
 
-    // TODO 5: Implemente pop()
-    //         Desempilha e retorna o último atendimento
-    string pop() {
-        return "";  // substitua pelo retorno correto
-    }
+string pop() {
+    if (isEmpty()) return "";
+    No* temp = topo;
+    string nome = temp->nome;
+    topo = topo->prox;
+    delete temp;
+    return nome;
+}
 
-    // TODO 6: Implemente peek()
-    //         Retorna o último atendimento SEM remover
-    string peek() const {
-        return "";  // substitua pelo retorno correto
-    }
+string peek() const {
+    if (isEmpty()) return "";
+    return topo->nome;
+}
 
     bool isEmpty() const { return topo == nullptr; }
 
